@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Ecológica - Laboratorio</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #d9f99d, #86efac);
+            color: #1f2937;
+        }
+
+        .contenedor {
+            max-width: 700px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: #166534;
+        }
+
+        .subtitulo {
+            text-align: center;
+            color: #4b5563;
+            margin-bottom: 30px;
+        }
+
+        .campo {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #bbf7d0;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #22c55e;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #16a34a;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #15803d;
+        }
+
+        .resultado {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 15px;
+            background: #f0fdf4;
+            border: 2px solid #86efac;
+        }
+
+        .resultado h2 {
+            color: #166534;
+        }
+
+        .dato {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        .numero {
+            font-size: 28px;
+            font-weight: bold;
+            color: #15803d;
+        }
+
+        .recomendacion {
+            margin-top: 20px;
+            padding: 15px;
+            background: #dcfce7;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="contenedor">
+
+        <h1>🌱 Calculadora Ecológica</h1>
+
+        <p class="subtitulo">
+            Calcula una estimación de las emisiones de CO₂
+            producidas por las computadoras de un laboratorio.
+        </p>
+
+        <div class="campo">
+            <label for="computadoras">
+                Número de computadoras:
+            </label>
+
+            <input
+                type="number"
+                id="computadoras"
+                min="1"
+                placeholder="Ejemplo: 20">
+        </div>
+
+        <div class="campo">
+            <label for="potencia">
+                Consumo de cada computadora (Watts):
+            </label>
+
+            <input
+                type="number"
+                id="potencia"
+                min="1"
+                placeholder="Ejemplo: 200">
+        </div>
+
+        <div class="campo">
+            <label for="horas">
+                Horas de uso al día:
+            </label>
+
+            <input
+                type="number"
+                id="horas"
+                min="0"
+                max="24"
+                step="0.1"
+                placeholder="Ejemplo: 6">
+        </div>
+
+        <div class="campo">
+            <label for="dias">
+                Días de uso al mes:
+            </label>
+
+            <input
+                type="number"
+                id="dias"
+                min="1"
+                max="31"
+                placeholder="Ejemplo: 22">
+        </div>
+
+        <div class="campo">
+            <label for="factor">
+                Factor de emisión eléctrica (kg CO₂/kWh):
+            </label>
+
+            <input
+                type="number"
+                id="factor"
+                min="0"
+                step="0.001"
+                value="0.12">
+        </div>
+
+        <button onclick="calcularCarbono()">
+            🌎 Calcular emisiones
+        </button>
+
+        <div class="resultado" id="resultado">
+
+            <h2>🌿 Resultado</h2>
+
+            <div class="dato">
+                Consumo diario:
+                <span class="numero" id="consumoDiario"></span>
+                kWh
+            </div>
+
+            <div class="dato">
+                Consumo mensual:
+                <span class="numero" id="consumoMensual"></span>
+                kWh
+            </div>
+
+            <div class="dato">
+                Emisiones mensuales:
+                <span class="numero" id="carbonoMensual"></span>
+                kg CO₂
+            </div>
+
+            <div class="dato">
+                Emisiones anuales estimadas:
+                <span class="numero" id="carbonoAnual"></span>
+                kg CO₂
+            </div>
+
+            <div class="recomendacion" id="recomendacion"></div>
+
+        </div>
+    </div>
+
+    <script>
+
+        function calcularCarbono() {
+
+            // Obtener los datos introducidos por el usuario
+            const computadoras =
+                Number(document.getElementById("computadoras").value);
+
+            const potencia =
+                Number(document.getElementById("potencia").value);
+
+            const horas =
+                Number(document.getElementById("horas").value);
+
+            const dias =
+                Number(document.getElementById("dias").value);
+
+            const factor =
+                Number(document.getElementById("factor").value);
+
+            // Comprobar que los datos sean válidos
+            if (
+                computadoras <= 0 ||
+                potencia <= 0 ||
+                horas < 0 ||
+                dias <= 0 ||
+                factor < 0
+            ) {
+                alert("Por favor, introduce valores válidos.");
+                return;
+            }
+
+            // Potencia total del laboratorio
+            const potenciaTotal = computadoras * potencia;
+
+            // Convertir Watts a kilowatts
+            const potenciaKW = potenciaTotal / 1000;
+
+            // Consumo diario en kWh
+            const consumoDiario = potenciaKW * horas;
+
+            // Consumo mensual
+            const consumoMensual = consumoDiario * dias;
+
+            // Emisiones mensuales de CO2
+            const carbonoMensual = consumoMensual * factor;
+
+            // Emisiones anuales
+            const carbonoAnual = carbonoMensual * 12;
+
+            // Mostrar resultados
+            document.getElementById("consumoDiario").textContent =
+                consumoDiario.toFixed(2);
+
+            document.getElementById("consumoMensual").textContent =
+                consumoMensual.toFixed(2);
+
+            document.getElementById("carbonoMensual").textContent =
+                carbonoMensual.toFixed(2);
+
+            document.getElementById("carbonoAnual").textContent =
+                carbonoAnual.toFixed(2);
+
+            // Mostrar recomendación
+            const recomendacion =
+                document.getElementById("recomendacion");
+
+            if (carbonoMensual < 50) {
+
+                recomendacion.innerHTML =
+                    "🌱 El consumo estimado es relativamente bajo. " +
+                    "Continúa utilizando las computadoras de manera eficiente.";
+
+            } else if (carbonoMensual < 150) {
+
+                recomendacion.innerHTML =
+                    "💡 El laboratorio tiene un consumo considerable. " +
+                    "Puedes reducirlo apagando las computadoras cuando no estén en uso.";
+
+            } else {
+
+                recomendacion.innerHTML =
+                    "⚡ El laboratorio presenta un consumo elevado. " +
+                    "Considera utilizar modos de ahorro de energía, apagar equipos " +
+                    "que no estén siendo utilizados y revisar el consumo de cada computadora.";
+            }
+
+            // Hacer visible el resultado
+            document.getElementById("resultado").style.display = "block";
+        }
+
+    </script>
+
+</body>
+</html>
+
